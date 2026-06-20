@@ -26,6 +26,10 @@
             echo json_encode($pratos);
             break;
 
+        case 'listarCategorias':
+            echo json_encode(Prato::listarCategorias());
+            break;
+
         case 'cadastrar':
             $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
             $preco = isset($_POST['preco']) ? $_POST['preco'] : 0.00;

@@ -16,7 +16,7 @@
     define('DB_HOST', 'localhost'); // Definindo o host
     define('DB_USER', 'root'); // Definindo o usuário
     define('DB_PASS', ''); // Definindo a senha
-    define('DB_NAME', 'restaurante_alta_gastronomia'); // Definindo o nome do banco de dados
+    define('DB_NAME', 'manzos_restaurante'); // Definindo o nome do banco de dados
 
     class Database { // Criando uma classe para o banco de dados
         private static $instance = null; // Criando uma variável para armazenar a conexão

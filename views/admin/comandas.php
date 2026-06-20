@@ -12,16 +12,20 @@
 
     <form id="formAbrirComanda" class="flex flex-col sm:flex-row items-end gap-4">
         <div class="w-full sm:w-auto">
-            <label class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">ID da Mesa</label>
-            <input type="number" name="mesa_id" required
-                   class="w-full sm:w-36 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
-                   placeholder="Nº mesa">
+            <label class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Mesa</label>
+            <select name="mesa_id" required
+                    class="w-full sm:w-52 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
+                    id="selectMesa">
+                <option value="">Selecione uma mesa...</option>
+            </select>
         </div>
         <div class="w-full sm:w-auto">
-            <label class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">ID do Garçom</label>
-            <input type="number" name="usuario_id" required
-                   class="w-full sm:w-36 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
-                   placeholder="ID garçom">
+            <label class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Garçom</label>
+            <select name="usuario_id" required
+                    class="w-full sm:w-52 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
+                    id="selectGarcom">
+                <option value="">Selecione um garçom...</option>
+            </select>
         </div>
         <button type="submit"
                 class="w-full sm:w-auto bg-gold-400 hover:bg-gold-300 text-black text-xs font-semibold tracking-wider uppercase px-5 py-2.5 rounded-sm transition-all duration-300">
@@ -67,10 +71,12 @@
             <form id="formAdicionarItem" class="flex flex-col sm:flex-row items-end gap-3">
                 <input type="hidden" name="pedido_id" id="comanda_id_atual">
                 <div class="w-full sm:w-auto">
-                    <label class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">ID Prato</label>
-                    <input type="number" name="prato_id" required
-                           class="w-full sm:w-28 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
-                           placeholder="ID">
+                    <label class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Prato</label>
+                    <select name="prato_id" required
+                            class="w-full sm:w-64 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
+                            id="selectPrato">
+                        <option value="">Selecione um prato...</option>
+                    </select>
                 </div>
                 <div class="w-full sm:w-auto">
                     <label class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Qtd</label>
@@ -297,6 +303,35 @@
 
     carregarAtivas();
     carregarHistorico();
+
+    // Popula selects de mesa, garçom e pratos ao carregar a página
+    fetch('../../controllers/MesaController.php?acao=listar')
+        .then(r => r.json())
+        .then(mesas => {
+            const sel = document.getElementById('selectMesa');
+            mesas.forEach(m => {
+                sel.innerHTML += `<option value="${m.id}">Mesa ${m.numero} (${m.capacidade} lugares — ${m.status})</option>`;
+            });
+        });
+
+    fetch('../../controllers/UsuarioController.php?acao=listar')
+        .then(r => r.json())
+        .then(usuarios => {
+            const sel = document.getElementById('selectGarcom');
+            usuarios.forEach(u => {
+                sel.innerHTML += `<option value="${u.id}">${u.nome} — ${u.cargo}</option>`;
+            });
+        });
+
+    fetch('../../controllers/PratoController.php?acao=listar')
+        .then(r => r.json())
+        .then(pratos => {
+            const sel = document.getElementById('selectPrato');
+            pratos.forEach(p => {
+                const preco = parseFloat(p.preco).toFixed(2).replace('.', ',');
+                sel.innerHTML += `<option value="${p.id}">${p.nome} — R$ ${preco}</option>`;
+            });
+        });
 </script>
 
 <?php include 'admin_footer.php'; ?>

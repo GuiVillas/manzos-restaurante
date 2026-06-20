@@ -18,6 +18,16 @@
          * 
          * @return array Lista de pedidos ativos com número da mesa e nome do garçom
          */
+        public static function listar() {
+            $db = Database::getConnection();
+            $sql = "SELECT p.id, p.status, m.numero AS mesa_numero
+                    FROM pedido p
+                    LEFT JOIN mesa m ON p.mesa_id = m.id
+                    ORDER BY p.id DESC";
+            $stmt = $db->query($sql);
+            return $stmt->fetchAll();
+        }
+
         public static function listarAtivas() {
             $db = Database::getConnection();
             $sql = "SELECT p.id, p.data_pedido, m.numero AS mesa_numero, u.nome AS garcom_nome

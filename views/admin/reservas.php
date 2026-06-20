@@ -14,20 +14,22 @@
         <input type="hidden" name="id" id="id">
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            <!-- ID Cliente -->
+            <!-- Cliente -->
             <div>
-                <label for="cliente_id" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">ID Cliente</label>
-                <input type="number" name="cliente_id" id="cliente_id" required
-                       class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
-                       placeholder="Ex: 1">
+                <label for="cliente_id" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Cliente</label>
+                <select name="cliente_id" id="cliente_id" required
+                        class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
+                    <option value="">Selecione um cliente...</option>
+                </select>
             </div>
 
-            <!-- ID Mesa -->
+            <!-- Mesa -->
             <div>
-                <label for="mesa_id" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">ID Mesa</label>
-                <input type="number" name="mesa_id" id="mesa_id" required
-                       class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
-                       placeholder="Ex: 5">
+                <label for="mesa_id" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Mesa</label>
+                <select name="mesa_id" id="mesa_id" required
+                        class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
+                    <option value="">Selecione uma mesa...</option>
+                </select>
             </div>
 
             <!-- Data -->
@@ -257,6 +259,25 @@
     }
 
     carregarReservas();
+
+    // Popula selects de cliente e mesa ao carregar a página
+    fetch('../../controllers/ClienteController.php?acao=listar')
+        .then(r => r.json())
+        .then(clientes => {
+            const sel = document.getElementById('cliente_id');
+            clientes.forEach(c => {
+                sel.innerHTML += `<option value="${c.id}">${c.nome} — ${c.telefone}</option>`;
+            });
+        });
+
+    fetch('../../controllers/MesaController.php?acao=listar')
+        .then(r => r.json())
+        .then(mesas => {
+            const sel = document.getElementById('mesa_id');
+            mesas.forEach(m => {
+                sel.innerHTML += `<option value="${m.id}">Mesa ${m.numero} (${m.capacidade} lugares — ${m.status})</option>`;
+            });
+        });
 </script>
 
 <?php include __DIR__ . '/admin_footer.php'; ?>

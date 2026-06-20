@@ -30,12 +30,13 @@
         <input type="hidden" name="id" id="id">
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- ID do Pedido -->
+            <!-- Pedido -->
             <div>
-                <label for="pedido_id" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Nº do Pedido</label>
-                <input type="number" name="pedido_id" id="pedido_id" required
-                       class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
-                       placeholder="ID do pedido">
+                <label for="pedido_id" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Pedido</label>
+                <select name="pedido_id" id="pedido_id" required
+                        class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
+                    <option value="">Selecione um pedido...</option>
+                </select>
             </div>
 
             <!-- Valor -->
@@ -246,6 +247,12 @@
             .then(p => {
                 document.getElementById('id').value              = p.id;
                 document.getElementById('pedido_id').value       = p.pedido_id;
+                // Garante que o select já está populado antes de setar o valor
+                if (!document.getElementById('pedido_id').value) {
+                    popularSelectPedidos().then(() => {
+                        document.getElementById('pedido_id').value = p.pedido_id;
+                    });
+                }
                 document.getElementById('valor').value           = p.valor;
                 document.getElementById('forma_pagamento').value = p.forma_pagamento;
                 document.getElementById('status').value          = p.status;
@@ -287,6 +294,23 @@
 
     filtrar('');
     carregarResumo();
+
+    // Popula select de pedidos
+    function popularSelectPedidos() {
+        fetch('../../controllers/PedidoController.php?acao=listar')
+            .then(r => r.json())
+            .then(pedidos => {
+                const sel = document.getElementById('pedido_id');
+                const valorAtual = sel.value;
+                sel.innerHTML = '<option value="">Selecione um pedido...</option>';
+                pedidos.forEach(p => {
+                    sel.innerHTML += `<option value="${p.id}">#${p.id} — Mesa ${p.mesa_numero} (${p.status})</option>`;
+                });
+                if (valorAtual) sel.value = valorAtual;
+            });
+    }
+
+    popularSelectPedidos();
 </script>
 
 <?php include __DIR__ . '/admin_footer.php'; ?>

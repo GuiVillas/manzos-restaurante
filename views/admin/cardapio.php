@@ -30,10 +30,11 @@
                    placeholder="Breve descrição do prato">
         </div>
         <div>
-            <label for="categoria_id" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">ID da Categoria</label>
-            <input type="number" name="categoria_id" id="categoria_id"
-                   class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
-                   placeholder="Ex: 1">
+            <label for="categoria_id" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Categoria</label>
+            <select name="categoria_id" id="categoria_id"
+                    class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
+                <option value="">Sem categoria</option>
+            </select>
         </div>
         <div class="md:col-span-2 lg:col-span-4 flex items-end">
             <button type="submit"
@@ -145,6 +146,16 @@
     }
 
     carregarPratos();
+
+    // Popula select de categorias
+    fetch('../../controllers/PratoController.php?acao=listarCategorias')
+        .then(r => r.json())
+        .then(cats => {
+            const sel = document.getElementById('categoria_id');
+            cats.forEach(c => {
+                sel.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+            });
+        });
 </script>
 
 <?php include 'admin_footer.php'; ?>

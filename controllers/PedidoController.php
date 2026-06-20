@@ -27,6 +27,10 @@
         case 'listar_ativas':
             echo json_encode(Pedido::listarAtivas());
             break;
+
+        case 'listar':
+            echo json_encode(Pedido::listar());
+            break;
             
         case 'listar_historico':
             echo json_encode(Pedido::listarHistorico());

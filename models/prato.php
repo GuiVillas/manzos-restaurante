@@ -37,6 +37,18 @@
          * @param string $descricao A descrição do prato.
          * @param bool $ativo O status de ativação do prato.
          */
+        /**
+         * Retorna todas as categorias de pratos cadastradas.
+         *
+         * @return array Lista de categorias com id e nome.
+         */
+        public static function listarCategorias() {
+            $db = Database::getConnection();
+            $sql = "SELECT id, nome FROM categoria_prato ORDER BY nome ASC";
+            $stmt = $db->query($sql);
+            return $stmt->fetchAll();
+        }
+
         public static function cadastrar($nome, $preco, $categoria_id, $descricao, $ativo) {
             $db = Database::getConnection();
             $sql = "INSERT INTO prato (nome, preco, categoria_prato_id, descricao, ativo)
