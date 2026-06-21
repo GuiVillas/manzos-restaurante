@@ -82,15 +82,19 @@
                 $ok   = $stmt->execute([$mesa_id, $usuario_id, $cliente_id ?: null]);
             } catch (PDOException $e) {
                 // Coluna cliente_id ainda não existe no banco (ALTER TABLE pendente)
-                // Faz o INSERT sem ela para não bloquear a operação
                 $sql  = "INSERT INTO pedido (mesa_id, usuario_id) VALUES (?, ?)";
                 $stmt = $db->prepare($sql);
                 $ok   = $stmt->execute([$mesa_id, $usuario_id]);
             }
 
             if ($ok) {
-                Mesa::atualizarStatus($mesa_id, 'Ocupada');
-                return $db->lastInsertId();
+                $novoId = $db->lastInsertId();
+                try {
+                    Mesa::atualizarStatus($mesa_id, 'Ocupada');
+                } catch (Exception $e) {
+                    // Falha ao atualizar status da mesa não deve impedir a comanda de abrir
+                }
+                return $novoId;
             }
             return false;
         }
