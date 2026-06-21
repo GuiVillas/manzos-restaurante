@@ -32,6 +32,14 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- CPF -->
+            <div>
+                <label for="cpf" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">CPF</label>
+                <input type="text" name="cpf" id="cpf" required maxlength="14"
+                       class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20"
+                       placeholder="000.000.000-00" inputmode="numeric">
+            </div>
+
             <!-- Telefone -->
             <div>
                 <label for="telefone" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Telefone</label>
@@ -59,7 +67,7 @@
 <div class="bg-neutral-900/50 border border-neutral-800 rounded-sm p-6 mb-6">
     <h2 class="text-sm font-semibold tracking-wider uppercase text-zinc-300 mb-4">Pesquisar Cliente</h2>
     <div class="flex flex-col sm:flex-row gap-3">
-        <input type="text" id="campoPesquisa" placeholder="Nome, email ou telefone..."
+        <input type="text" id="campoPesquisa" placeholder="CPF, nome, email ou telefone..."
                class="flex-1 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
         <button type="button" onclick="pesquisarClientes()"
                 class="bg-gold-400 hover:bg-gold-300 text-black text-xs font-semibold tracking-wider uppercase px-5 py-2.5 rounded-sm transition-all duration-300">
@@ -79,6 +87,7 @@
             <thead class="bg-neutral-900">
                 <tr>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">ID</th>
+                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">CPF</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Nome</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">E-mail</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Telefone</th>
@@ -97,7 +106,7 @@
         tbody.innerHTML = '';
 
         if (dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-sm text-zinc-500 px-5 py-8">Nenhum cliente encontrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-sm text-zinc-500 px-5 py-8">Nenhum cliente encontrado.</td></tr>';
             return;
         }
 
@@ -107,6 +116,7 @@
             tbody.innerHTML += `
                 <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
                     <td class="text-sm text-zinc-500 px-5 py-3 font-mono">${cliente.id}</td>
+                    <td class="text-sm text-zinc-300 px-5 py-3 font-mono">${cliente.cpf || '—'}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3 font-medium">${cliente.nome}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3">${cliente.email}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3">${cliente.telefone}</td>
@@ -168,6 +178,7 @@
             .then(response => response.json())
             .then(dados => {
                 document.getElementById('id').value = dados.id;
+                document.getElementById('cpf').value = dados.cpf || '';
                 document.getElementById('nome').value = dados.nome;
                 document.getElementById('email').value = dados.email;
                 document.getElementById('telefone').value = dados.telefone;

@@ -6,6 +6,7 @@ $reserva_confirmada = false;
 $erro = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $cpf = filter_input(INPUT_POST, 'cpf', FILTER_SANITIZE_SPECIAL_CHARS);
     $nome = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_SPECIAL_CHARS);
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
     $telefone = filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -13,20 +14,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = filter_input(INPUT_POST, 'data', FILTER_SANITIZE_SPECIAL_CHARS);
     $horario = filter_input(INPUT_POST, 'horario', FILTER_SANITIZE_SPECIAL_CHARS);
 
-    if ($nome && $email && $telefone && $pessoas && $data && $horario) {
+    if ($cpf && $nome && $email && $telefone && $pessoas && $data && $horario) {
         try {
             $db = Database::getConnection();
 
-            // 1. Buscar ou criar o cliente pelo email
-            $stmtCliente = $db->prepare("SELECT id FROM cliente WHERE email = ? LIMIT 1");
-            $stmtCliente->execute([$email]);
+            // 1. Buscar ou criar o cliente pelo CPF (identificador único)
+            $stmtCliente = $db->prepare("SELECT id FROM cliente WHERE cpf = ? LIMIT 1");
+            $stmtCliente->execute([$cpf]);
             $cliente = $stmtCliente->fetch();
 
             if ($cliente) {
                 $cliente_id = $cliente['id'];
+                // Atualizar dados do cliente caso tenham mudado
+                $stmtUpdate = $db->prepare("UPDATE cliente SET nome = ?, email = ?, telefone = ? WHERE id = ?");
+                $stmtUpdate->execute([$nome, $email, $telefone, $cliente_id]);
             } else {
-                $stmtInsert = $db->prepare("INSERT INTO cliente (nome, email, telefone) VALUES (?, ?, ?)");
-                $stmtInsert->execute([$nome, $email, $telefone]);
+                $stmtInsert = $db->prepare("INSERT INTO cliente (cpf, nome, email, telefone) VALUES (?, ?, ?, ?)");
+                $stmtInsert->execute([$cpf, $nome, $email, $telefone]);
                 $cliente_id = $db->lastInsertId();
             }
 
@@ -118,8 +122,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 <?php endif; ?>
 
-                <form action="reserva.php" method="POST" class="space-y-6">
-                    <!-- Nome -->
+                <form action="reserva.php" method="POST" class="space-y-6" id="formReserva">
+
+                    <!-- CPF com busca -->
+                    <div>
+                        <label for="cpf" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">CPF</label>
+                        <div class="relative">
+                            <input type="text" id="cpf" name="cpf" required maxlength="14"
+                                   class="w-full bg-transparent border border-neutral-800 focus:border-gold-400 text-white placeholder-zinc-700 text-sm px-4 py-3 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20 pr-12"
+                                   placeholder="000.000.000-00"
+                                   inputmode="numeric">
+                            <!-- Ícone de status (loading / encontrado / novo) -->
+                            <div id="cpfStatus" class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+                            </div>
+                        </div>
+                        <!-- Feedback do CPF -->
+                        <div id="cpfFeedback" class="mt-2 text-xs font-light hidden"></div>
+                    </div>
+
+                    <!-- Nome (preenchido automaticamente se cliente existir) -->
                     <div>
                         <label for="nome" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Nome Completo</label>
                         <input type="text" id="nome" name="nome" required 
@@ -187,6 +208,147 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </button>
                     </div>
                 </form>
+
+                <script>
+                    // ============================================
+                    // Máscara de CPF e Busca Automática por CPF
+                    // ============================================
+                    
+                    const cpfInput = document.getElementById('cpf');
+                    const cpfStatus = document.getElementById('cpfStatus');
+                    const cpfFeedback = document.getElementById('cpfFeedback');
+                    const nomeInput = document.getElementById('nome');
+                    const emailInput = document.getElementById('email');
+                    const telefoneInput = document.getElementById('telefone');
+
+                    let buscaTimeout = null;
+
+                    // Máscara de CPF: 000.000.000-00
+                    cpfInput.addEventListener('input', function(e) {
+                        let valor = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+                        
+                        if (valor.length > 11) valor = valor.slice(0, 11);
+                        
+                        // Aplica a máscara
+                        if (valor.length > 9) {
+                            valor = valor.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+                        } else if (valor.length > 6) {
+                            valor = valor.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+                        } else if (valor.length > 3) {
+                            valor = valor.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+                        }
+                        
+                        e.target.value = valor;
+
+                        // Limpa feedback anterior
+                        cpfFeedback.classList.add('hidden');
+                        cpfStatus.innerHTML = '';
+
+                        // Busca quando o CPF estiver completo (14 caracteres com máscara)
+                        if (valor.length === 14) {
+                            clearTimeout(buscaTimeout);
+                            buscaTimeout = setTimeout(() => buscarClientePorCpf(valor), 300);
+                        }
+                    });
+
+                    function buscarClientePorCpf(cpf) {
+                        // Mostra loading
+                        cpfStatus.innerHTML = `
+                            <svg class="w-4 h-4 text-gold-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>`;
+
+                        fetch('controllers/ClienteController.php?acao=buscar_por_cpf&cpf=' + encodeURIComponent(cpf))
+                            .then(response => response.json())
+                            .then(dados => {
+                                if (dados && dados.id) {
+                                    // Cliente encontrado — preenche os campos
+                                    nomeInput.value = dados.nome || '';
+                                    emailInput.value = dados.email || '';
+                                    telefoneInput.value = dados.telefone || '';
+
+                                    // Torna os campos somente leitura quando o cliente já existe
+                                    nomeInput.readOnly = true;
+                                    emailInput.readOnly = true;
+                                    telefoneInput.readOnly = true;
+                                    nomeInput.classList.add('opacity-60');
+                                    emailInput.classList.add('opacity-60');
+                                    telefoneInput.classList.add('opacity-60');
+
+                                    // Ícone de sucesso
+                                    cpfStatus.innerHTML = `
+                                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>`;
+
+                                    // Feedback visual
+                                    cpfFeedback.innerHTML = `
+                                        <span class="text-emerald-400">✓ Cliente encontrado:</span> 
+                                        <span class="text-zinc-300">${dados.nome}</span>`;
+                                    cpfFeedback.classList.remove('hidden');
+                                    cpfInput.classList.remove('border-neutral-800');
+                                    cpfInput.classList.add('border-emerald-500/50');
+                                } else {
+                                    // Cliente novo — libera campos para preenchimento
+                                    nomeInput.value = '';
+                                    emailInput.value = '';
+                                    telefoneInput.value = '';
+                                    nomeInput.readOnly = false;
+                                    emailInput.readOnly = false;
+                                    telefoneInput.readOnly = false;
+                                    nomeInput.classList.remove('opacity-60');
+                                    emailInput.classList.remove('opacity-60');
+                                    telefoneInput.classList.remove('opacity-60');
+
+                                    // Ícone de novo
+                                    cpfStatus.innerHTML = `
+                                        <svg class="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>`;
+
+                                    cpfFeedback.innerHTML = `
+                                        <span class="text-gold-400">Novo cliente</span> — 
+                                        <span class="text-zinc-500">preencha os dados abaixo para cadastro automático.</span>`;
+                                    cpfFeedback.classList.remove('hidden');
+                                    cpfInput.classList.remove('border-neutral-800', 'border-emerald-500/50');
+                                    cpfInput.classList.add('border-gold-400/50');
+
+                                    nomeInput.focus();
+                                }
+                            })
+                            .catch(() => {
+                                cpfStatus.innerHTML = '';
+                                cpfFeedback.innerHTML = `<span class="text-red-400">Erro ao buscar CPF. Preencha os dados manualmente.</span>`;
+                                cpfFeedback.classList.remove('hidden');
+
+                                // Libera campos
+                                nomeInput.readOnly = false;
+                                emailInput.readOnly = false;
+                                telefoneInput.readOnly = false;
+                                nomeInput.classList.remove('opacity-60');
+                                emailInput.classList.remove('opacity-60');
+                                telefoneInput.classList.remove('opacity-60');
+                            });
+                    }
+
+                    // Quando limpar o campo CPF, reseta tudo
+                    cpfInput.addEventListener('change', function() {
+                        if (this.value.length < 14) {
+                            nomeInput.readOnly = false;
+                            emailInput.readOnly = false;
+                            telefoneInput.readOnly = false;
+                            nomeInput.classList.remove('opacity-60');
+                            emailInput.classList.remove('opacity-60');
+                            telefoneInput.classList.remove('opacity-60');
+                            cpfInput.classList.remove('border-emerald-500/50', 'border-gold-400/50');
+                            cpfInput.classList.add('border-neutral-800');
+                            cpfFeedback.classList.add('hidden');
+                            cpfStatus.innerHTML = '';
+                        }
+                    });
+                </script>
+
             <?php endif; ?>
 
         </div>

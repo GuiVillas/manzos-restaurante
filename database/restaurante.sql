@@ -4,6 +4,7 @@ USE manzos_restaurante;
 
 CREATE TABLE cliente (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
     telefone VARCHAR(100) NOT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -78,12 +79,12 @@ CREATE TABLE prato_pedido (
     FOREIGN KEY (pedido_id) REFERENCES pedido(id)
 );
 
-INSERT INTO cliente (telefone, email, nome) VALUES
-('27999990001', 'carlos.silva@email.com', 'Carlos Silva'),
-('27999990002', 'ana.costa@email.com', 'Ana Costa'),
-('27999990003', 'marcos.oliveira@email.com', 'Marcos Oliveira'),
-('27999990004', 'juliana.santos@email.com', 'Juliana Santos'),
-('27999990005', 'pedro.almeida@email.com', 'Pedro Almeida');
+INSERT INTO cliente (cpf, telefone, email, nome) VALUES
+('123.456.789-00', '27999990001', 'carlos.silva@email.com', 'Carlos Silva'),
+('234.567.890-11', '27999990002', 'ana.costa@email.com', 'Ana Costa'),
+('345.678.901-22', '27999990003', 'marcos.oliveira@email.com', 'Marcos Oliveira'),
+('456.789.012-33', '27999990004', 'juliana.santos@email.com', 'Juliana Santos'),
+('567.890.123-44', '27999990005', 'pedro.almeida@email.com', 'Pedro Almeida');
 
 INSERT INTO mesa (status, capacidade, numero) VALUES
 ('Disponível', 2, 1),

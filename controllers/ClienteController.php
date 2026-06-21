@@ -38,17 +38,28 @@
             echo json_encode(Cliente::buscarPorId($id));
             break;
 
+        case 'buscar_por_cpf':
+            $cpf = isset($_GET['cpf']) ? $_GET['cpf'] : (isset($_POST['cpf']) ? $_POST['cpf'] : '');
+            $resultado = Cliente::buscarPorCpf($cpf);
+            echo json_encode($resultado ? $resultado : ['encontrado' => false]);
+            break;
+
         case 'cadastrar':
             $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
             $email = isset($_POST['email']) ? $_POST['email'] : '';
             $telefone = isset($_POST['telefone']) ? $_POST['telefone'] : '';
+            $cpf = isset($_POST['cpf']) ? $_POST['cpf'] : '';
 
             try {
-                $sucesso = Cliente::cadastrar($nome, $email, $telefone);
+                $sucesso = Cliente::cadastrar($nome, $email, $telefone, $cpf);
                 $msg = $sucesso ? 'Cliente cadastrado com sucesso!' : 'Erro ao cadastrar cliente.';
             } catch (Exception $e) {
                 $sucesso = false;
-                $msg = 'Erro: Este e-mail já está cadastrado.';
+                if (strpos($e->getMessage(), 'cpf') !== false) {
+                    $msg = 'Erro: Este CPF já está cadastrado.';
+                } else {
+                    $msg = 'Erro: Este e-mail já está cadastrado.';
+                }
             }
 
             echo json_encode(['sucesso' => $sucesso, 'mensagem' => $msg]);
@@ -59,13 +70,18 @@
             $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
             $email = isset($_POST['email']) ? $_POST['email'] : '';
             $telefone = isset($_POST['telefone']) ? $_POST['telefone'] : '';
+            $cpf = isset($_POST['cpf']) ? $_POST['cpf'] : '';
 
             try {
-                $sucesso = Cliente::atualizar($id, $nome, $email, $telefone);
-                $msg = $sucesso ? 'Cliente updated com sucesso!' : 'Erro ao atualizar cliente.';
+                $sucesso = Cliente::atualizar($id, $nome, $email, $telefone, $cpf);
+                $msg = $sucesso ? 'Cliente atualizado com sucesso!' : 'Erro ao atualizar cliente.';
             } catch (Exception $e) {
                 $sucesso = false;
-                $msg = 'Erro: Este e-mail já está cadastrado para outro cliente.';
+                if (strpos($e->getMessage(), 'cpf') !== false) {
+                    $msg = 'Erro: Este CPF já está cadastrado para outro cliente.';
+                } else {
+                    $msg = 'Erro: Este e-mail já está cadastrado para outro cliente.';
+                }
             }
 
             echo json_encode(['sucesso' => $sucesso, 'mensagem' => $msg]);

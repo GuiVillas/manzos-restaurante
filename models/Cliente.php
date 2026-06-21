@@ -37,11 +37,12 @@
             $sql = "SELECT * FROM cliente 
                     WHERE nome LIKE ? OR
                           email LIKE ? OR
-                          telefone LIKE ?
+                          telefone LIKE ? OR
+                          cpf LIKE ?
                     ORDER BY nome ASC";
             $stmt = $db->prepare($sql);
             $termoLike = "%" . $termo . "%";
-            $stmt->execute([$termoLike, $termoLike, $termoLike]);
+            $stmt->execute([$termoLike, $termoLike, $termoLike, $termoLike]);
             return $stmt->fetchAll();
         }
 
@@ -63,6 +64,21 @@
         }
 
         /**
+         * Retorna os detalhes de um cliente específico por CPF.
+         * 
+         * @param string $cpf O CPF do cliente a ser buscado.
+         * @return array|false Os detalhes do cliente ou false se não encontrado.
+         */
+        public static function buscarPorCpf($cpf) {
+            $db = Database::getConnection();
+            $sql = "SELECT * FROM cliente
+                    WHERE cpf = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$cpf]);
+            return $stmt->fetch();
+        }
+
+        /**
          * Cadastra um novo cliente com os dados fornecidos.
          * 
          * Realiza uma inserção SQL para adicionar um novo cliente à tabela cliente.
@@ -71,12 +87,12 @@
          * @param string $email O e-mail do cliente.
          * @param string $telefone O telefone do cliente.
          */
-        public static function cadastrar($nome, $email, $telefone) {
+        public static function cadastrar($nome, $email, $telefone, $cpf = '') {
             $db = Database::getConnection();
-            $sql = "INSERT INTO cliente (nome, email, telefone)
-                    VALUES (?, ?, ?)";
+            $sql = "INSERT INTO cliente (nome, email, telefone, cpf)
+                    VALUES (?, ?, ?, ?)";
             $stmt = $db->prepare($sql);
-            return $stmt->execute([$nome, $email, $telefone]);
+            return $stmt->execute([$nome, $email, $telefone, $cpf]);
         }
 
         /**
@@ -89,13 +105,13 @@
          * @param string $email O novo e-mail do cliente.
          * @param string $telefone O novo telefone do cliente.
          */
-        public static function atualizar($id, $nome, $email, $telefone) {
+        public static function atualizar($id, $nome, $email, $telefone, $cpf = '') {
             $db = Database::getConnection();
             $sql = "UPDATE cliente
-                    SET nome = ?, email = ?, telefone = ?
+                    SET nome = ?, email = ?, telefone = ?, cpf = ?
                     WHERE id = ?";
             $stmt = $db->prepare($sql);
-            return $stmt->execute([$nome, $email, $telefone, $id]);
+            return $stmt->execute([$nome, $email, $telefone, $cpf, $id]);
         }
 
         /**
