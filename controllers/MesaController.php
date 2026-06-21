@@ -72,6 +72,13 @@
             }
             break;
 
+        case 'atualizarStatus':
+            $id     = isset($_POST['id'])     ? $_POST['id']     : 0;
+            $status = isset($_POST['status']) ? $_POST['status'] : '';
+            $sucesso = Mesa::atualizarStatus($id, $status);
+            echo json_encode(['sucesso' => $sucesso]);
+            break;
+
         default:
             echo json_encode(['sucesso' => false, 'mensagem' => 'Ação inválida.']);
             break;

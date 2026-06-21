@@ -82,10 +82,41 @@
 
         public static function deletar($id) {
             $db = Database::getConnection();
-            $sql = "DELETE FROM reserva
-                    WHERE id = ?";
+            $sql = "DELETE FROM reserva WHERE id = ?";
             $stmt = $db->prepare($sql);
             return $stmt->execute([$id]);
+        }
+
+        /**
+         * Marca uma reserva como "Concluída" quando o cliente chega.
+         * Atualiza o status da mesa para "Ocupada".
+         * Retorna os dados necessários para abrir a comanda automaticamente.
+         *
+         * @param int $id O ID da reserva.
+         * @return array|false Dados da reserva (cliente_id, mesa_id) ou false se falhar.
+         */
+        public static function receberCliente($id) {
+            $db = Database::getConnection();
+
+            // Busca dados da reserva antes de atualizar
+            $stmtBusca = $db->prepare("SELECT cliente_id, mesa_id FROM reserva WHERE id = ?");
+            $stmtBusca->execute([$id]);
+            $reserva = $stmtBusca->fetch();
+
+            if (!$reserva) return false;
+
+            // Marca reserva como Concluída
+            $stmtUpd = $db->prepare("UPDATE reserva SET status = 'Concluída' WHERE id = ?");
+            $ok = $stmtUpd->execute([$id]);
+
+            if ($ok) {
+                // Mesa permanece "Reservada" até a comanda ser aberta pelo garçom
+                return [
+                    'cliente_id' => $reserva['cliente_id'],
+                    'mesa_id'    => $reserva['mesa_id'],
+                ];
+            }
+            return false;
         }
     }
 ?>

@@ -79,6 +79,20 @@
         }
 
         /**
+         * Atualiza apenas o status de uma mesa (usado internamente ao abrir/fechar comandas e receber reservas).
+         *
+         * @param int    $id     O ID da mesa.
+         * @param string $status O novo status ('Disponível', 'Ocupada', 'Reservada').
+         * @return bool True se a atualização foi bem-sucedida.
+         */
+        public static function atualizarStatus($id, $status) {
+            $db = Database::getConnection();
+            $sql = "UPDATE mesa SET status = ? WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            return $stmt->execute([$status, $id]);
+        }
+
+        /**
          * Atualiza os dados de uma mesa existente.
          * 
          * Realiza uma atualização SQL para modificar os dados de uma mesa com base no ID fornecido.

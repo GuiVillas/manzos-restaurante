@@ -61,6 +61,7 @@
                 <label for="status" class="block text-zinc-400 text-xs font-medium tracking-wider uppercase mb-2">Status</label>
                 <select name="status" id="status"
                         class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
+                    <option value="Pendente">Pendente</option>
                     <option value="Confirmada">Confirmada</option>
                     <option value="Cancelada">Cancelada</option>
                     <option value="Concluída">Concluída</option>
@@ -150,6 +151,13 @@
 
         dados.forEach(reserva => {
             let dataFormatada = reserva.data_reserva.split('-').reverse().join('/');
+            const btnReceber = (reserva.status === 'Confirmada')
+                ? `<button onclick="receberCliente(${reserva.id})"
+                           class="text-[11px] uppercase tracking-wider font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
+                       Receber
+                   </button>
+                   <span class="text-neutral-700">|</span>`
+                : '';
             tbody.innerHTML += `
                 <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
                     <td class="text-sm text-zinc-500 px-5 py-3 font-mono">${reserva.id}</td>
@@ -161,6 +169,7 @@
                     <td class="px-5 py-3">${getStatusBadge(reserva.status)}</td>
                     <td class="px-5 py-3">
                         <div class="flex items-center gap-2">
+                            ${btnReceber}
                             <button onclick="editarReserva(${reserva.id})"
                                     class="text-[11px] uppercase tracking-wider font-semibold text-gold-400 hover:text-gold-300 transition-colors">
                                 Editar
@@ -259,6 +268,27 @@
     }
 
     carregarReservas();
+
+    function receberCliente(reservaId) {
+        if (!confirm('Confirmar chegada do cliente e marcar reserva como Concluída?')) return;
+
+        const formData = new FormData();
+        formData.append('acao', 'receber');
+        formData.append('id', reservaId);
+
+        fetch('../../controllers/ReservaController.php', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => {
+                if (data.sucesso) {
+                    mostrarToast('Cliente recebido! Redirecionando para abrir comanda...', 'sucesso');
+                    setTimeout(() => {
+                        window.location.href = `comandas.php?cliente_id=${data.cliente_id}&mesa_id=${data.mesa_id}`;
+                    }, 1200);
+                } else {
+                    mostrarToast(data.mensagem || 'Erro ao receber cliente.', 'erro');
+                }
+            });
+    }
 
     // Popula selects de cliente e mesa ao carregar a página
     fetch('../../controllers/ClienteController.php?acao=listar')

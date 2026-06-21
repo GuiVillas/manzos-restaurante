@@ -295,22 +295,42 @@
     filtrar('');
     carregarResumo();
 
-    // Popula select de pedidos
-    function popularSelectPedidos() {
+    // Ao selecionar um pedido, busca o total e preenche o campo valor automaticamente
+    document.getElementById('pedido_id').addEventListener('change', function() {
+        const pedidoId = this.value;
+        if (!pedidoId) return;
+        fetch('../../controllers/PedidoController.php?acao=total_pedido&pedido_id=' + pedidoId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.total > 0) {
+                    document.getElementById('valor').value = parseFloat(data.total).toFixed(2);
+                }
+            });
+    });
+
+    // Popula select de pedidos e, se vier ?pedido_id=X na URL, pré-seleciona e preenche
+    function popularSelectPedidos(pedidoIdParam) {
         fetch('../../controllers/PedidoController.php?acao=listar')
             .then(r => r.json())
             .then(pedidos => {
                 const sel = document.getElementById('pedido_id');
-                const valorAtual = sel.value;
+                const valorAtual = pedidoIdParam || sel.value;
                 sel.innerHTML = '<option value="">Selecione um pedido...</option>';
                 pedidos.forEach(p => {
                     sel.innerHTML += `<option value="${p.id}">#${p.id} — Mesa ${p.mesa_numero} (${p.status})</option>`;
                 });
-                if (valorAtual) sel.value = valorAtual;
+                if (valorAtual) {
+                    sel.value = valorAtual;
+                    // Dispara o evento change para preencher o valor automaticamente
+                    sel.dispatchEvent(new Event('change'));
+                }
             });
     }
 
-    popularSelectPedidos();
+    // Lê parâmetro ?pedido_id da URL (vindo de "Encerrar Comanda")
+    const urlParams = new URLSearchParams(window.location.search);
+    const pedidoIdParam = urlParams.get('pedido_id');
+    popularSelectPedidos(pedidoIdParam);
 </script>
 
 <?php include __DIR__ . '/admin_footer.php'; ?>

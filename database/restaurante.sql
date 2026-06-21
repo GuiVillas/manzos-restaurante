@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS restaurante_alta_gastronomia;
+CREATE DATABASE IF NOT EXISTS manzos_restaurante;
 
-USE restaurante_alta_gastronomia;
+USE manzos_restaurante;
 
 CREATE TABLE cliente (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,10 +60,12 @@ CREATE TABLE pedido (
     id INT AUTO_INCREMENT PRIMARY KEY,
     mesa_id INT,
     usuario_id INT,
+    cliente_id INT NULL,
     data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) DEFAULT 'Ativa',
     FOREIGN KEY (mesa_id) REFERENCES mesa(id),
-    FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+    FOREIGN KEY (cliente_id) REFERENCES cliente(id)
 );
 
 CREATE TABLE prato_pedido (
@@ -167,9 +169,6 @@ INSERT INTO prato_pedido (
 (5, 5, 1, 89.90),
 (6, 5, 1, 32.00),
 (10, 5, 2, 45.00);
--- =====================================================
--- NOVAS TABELAS: garcom, pagamento, fornecedor
--- =====================================================
 
 CREATE TABLE pagamento (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -208,3 +207,4 @@ INSERT INTO fornecedor (nome, cnpj, telefone, email, categoria, contato, ativo) 
 ('Hortifruti Capixaba', '34.567.890/0001-12', '2799003300', 'contato@hortifruticap.com.br', 'Hortifruti', 'José Neto', TRUE),
 ('Laticínios Serra Verde', '45.678.901/0001-23', '2733004400', 'vendas@laticiniossv.com.br', 'Laticínios', 'Mariana Costa', TRUE),
 ('Embalagens FastPack', '56.789.012/0001-34', '2733005500', 'comercial@fastpack.com.br', 'Embalagens', 'Carlos Freitas', FALSE);
+

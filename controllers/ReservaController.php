@@ -72,6 +72,16 @@
             echo json_encode(['sucesso' => $sucesso]);
             break;
 
+        case 'receber':
+            $id = isset($_POST['id']) ? $_POST['id'] : 0;
+            $dados = Reserva::receberCliente($id);
+            if ($dados) {
+                echo json_encode(['sucesso' => true, 'cliente_id' => $dados['cliente_id'], 'mesa_id' => $dados['mesa_id']]);
+            } else {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao receber cliente.']);
+            }
+            break;
+
         default:
             echo json_encode(['sucesso' => false, 'mensagem' => 'Ação não reconhecida.']);
             break;

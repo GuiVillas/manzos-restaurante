@@ -37,15 +37,21 @@
             break;
 
         case 'abrir':
-            $mesa_id = isset($_POST['mesa_id']) ? $_POST['mesa_id'] : null;
+            $mesa_id    = isset($_POST['mesa_id'])    ? $_POST['mesa_id']    : null;
             $usuario_id = isset($_POST['usuario_id']) ? $_POST['usuario_id'] : null;
+            $cliente_id = isset($_POST['cliente_id']) && !empty($_POST['cliente_id']) ? $_POST['cliente_id'] : null;
 
-            $novo_id = Pedido::abrirComanda($mesa_id, $usuario_id);
+            $novo_id = Pedido::abrirComanda($mesa_id, $usuario_id, $cliente_id);
             if ($novo_id) {
                 echo json_encode(['sucesso' => true, 'id' => $novo_id, 'mensagem' => 'Comanda aberta com sucesso.']);
             } else {
                 echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao abrir a comanda.']);
             }
+            break;
+
+        case 'total_pedido':
+            $pedido_id = isset($_GET['pedido_id']) ? $_GET['pedido_id'] : 0;
+            echo json_encode(['total' => Pedido::buscarTotal($pedido_id)]);
             break;
         
         case 'fechar':
