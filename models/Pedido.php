@@ -156,7 +156,12 @@
         public static function adicionarItem($pedido_id, $prato_id, $quantidade) {
             $db = Database::getConnection();
 
-            $stmtPrato = $db->prepare('SELECT preco FROM prato WHERE id = ? LIMIT 1');
+            // Busca o preço efetivo: preço original × multiplicador de desconto
+            $stmtPrato = $db->prepare(
+                'SELECT preco, desconto_multiplicador,
+                        ROUND(preco * desconto_multiplicador, 2) AS preco_efetivo
+                 FROM prato WHERE id = ? LIMIT 1'
+            );
             $stmtPrato->execute([$prato_id]);
             $prato = $stmtPrato->fetch();
 
@@ -164,10 +169,11 @@
                 return false;
             }
 
+            // Armazena o preço efetivo (com desconto aplicado) no momento da venda
             $sql = 'INSERT INTO prato_pedido (pedido_id, prato_id, quantidade, preco_unitario)
                     VALUES (?, ?, ?, ?)';
             $stmt = $db->prepare($sql);
-            return $stmt->execute([$pedido_id, $prato_id, $quantidade, $prato['preco']]);
+            return $stmt->execute([$pedido_id, $prato_id, $quantidade, $prato['preco_efetivo']]);
         }
 
         /**

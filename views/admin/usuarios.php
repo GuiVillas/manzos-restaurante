@@ -111,7 +111,6 @@
         <table class="w-full">
             <thead class="bg-neutral-900">
                 <tr>
-                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">ID</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Nome</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">E-mail</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Cargo</th>
@@ -142,7 +141,7 @@
         tbody.innerHTML = '';
 
         if (dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-sm text-zinc-500 px-5 py-8">Nenhum usuário encontrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-sm text-zinc-500 px-5 py-8">Nenhum usuário encontrado.</td></tr>';
             return;
         }
 
@@ -151,7 +150,6 @@
 
             tbody.innerHTML += `
                 <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
-                    <td class="text-sm text-zinc-500 px-5 py-3 font-mono">${u.id}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3 font-medium">${u.nome}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3">${u.email}</td>
                     <td class="px-5 py-3">
@@ -243,7 +241,7 @@
                 document.getElementById('senhaUsuarioId').value = u.id;
                 document.getElementById('cardAlterarSenha').classList.remove('hidden');
 
-                document.getElementById('tituloForm').innerText = 'Editar Usuário #' + u.id;
+                document.getElementById('tituloForm').innerText = 'Editar Usuário: ' + u.nome;
                 document.getElementById('btnSalvar').innerText  = 'Atualizar Usuário';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });

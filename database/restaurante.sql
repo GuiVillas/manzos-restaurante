@@ -51,6 +51,7 @@ CREATE TABLE prato (
     id INT AUTO_INCREMENT PRIMARY KEY,
     categoria_prato_id INT,
     preco DECIMAL(10, 2) NOT NULL,
+    desconto_multiplicador DECIMAL(4, 2) NOT NULL DEFAULT 1.00,
     nome VARCHAR(100) NOT NULL,
     ativo BOOLEAN NOT NULL,
     descricao VARCHAR(255),

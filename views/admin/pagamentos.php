@@ -120,13 +120,13 @@
         <table class="w-full">
             <thead class="bg-neutral-900">
                 <tr>
-                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">ID</th>
-                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Pedido</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Mesa</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Forma</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Valor</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Status</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Registrado em</th>
+                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Pago em</th>
+                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Observações</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Ações</th>
                 </tr>
             </thead>
@@ -170,9 +170,7 @@
 
             tbody.innerHTML += `
                 <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
-                    <td class="text-sm text-zinc-500 px-5 py-3 font-mono">${p.id}</td>
-                    <td class="text-sm text-zinc-300 px-5 py-3 font-mono">#${p.pedido_id}</td>
-                    <td class="text-sm text-zinc-300 px-5 py-3">${p.mesa_numero ? 'Mesa ' + p.mesa_numero : '—'}</td>
+                    <td class="text-sm text-zinc-300 px-5 py-3 font-medium">${p.mesa_numero ? 'Mesa ' + p.mesa_numero : '—'}</td>
                     <td class="px-5 py-3">
                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-sm ${formaClass}">${p.forma_pagamento}</span>
                     </td>
@@ -181,6 +179,8 @@
                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-sm ${statusClass}">${p.status}</span>
                     </td>
                     <td class="text-sm text-zinc-400 px-5 py-3">${dataCriacao}</td>
+                    <td class="text-sm text-zinc-400 px-5 py-3">${p.pago_em ? p.pago_em.split(" ")[0].split("-").reverse().join("/") : '<span class="text-zinc-600">—</span>'}</td>
+                    <td class="text-sm text-zinc-400 px-5 py-3 max-w-xs">${p.observacoes ? p.observacoes.substring(0,35) + (p.observacoes.length > 35 ? '…' : '') : '<span class="text-zinc-600">—</span>'}</td>
                     <td class="px-5 py-3">
                         <div class="flex items-center gap-2">
                             <button onclick="editarPagamento(${p.id})"
@@ -258,7 +258,7 @@
                 document.getElementById('status').value          = p.status;
                 document.getElementById('observacoes').value     = p.observacoes || '';
 
-                document.getElementById('tituloForm').innerText = 'Editar Pagamento #' + p.id;
+                document.getElementById('tituloForm').innerText = 'Editar Pagamento — ' + (p.mesa_numero ? 'Mesa ' + p.mesa_numero : 'Pedido #' + p.pedido_id);
                 document.getElementById('btnSalvar').innerText  = 'Atualizar Pagamento';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });

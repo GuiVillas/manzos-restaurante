@@ -114,13 +114,13 @@
         <table class="w-full">
             <thead class="bg-neutral-900">
                 <tr>
-                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">ID</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Cliente</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Mesa</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Data</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Hora</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Pessoas</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Status</th>
+                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Observações</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Ações</th>
                 </tr>
             </thead>
@@ -160,13 +160,13 @@
                 : '';
             tbody.innerHTML += `
                 <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
-                    <td class="text-sm text-zinc-500 px-5 py-3 font-mono">${reserva.id}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3 font-medium">${reserva.cliente_nome}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3">Mesa ${reserva.mesa_numero}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3">${dataFormatada}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3">${reserva.hora_reserva}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3 text-center">${reserva.num_pessoas}</td>
                     <td class="px-5 py-3">${getStatusBadge(reserva.status)}</td>
+                    <td class="text-sm text-zinc-400 px-5 py-3 max-w-xs truncate" title="${reserva.observacoes || ''}">${reserva.observacoes ? reserva.observacoes.substring(0,40) + (reserva.observacoes.length > 40 ? '…' : '') : '<span class="text-zinc-600">—</span>'}</td>
                     <td class="px-5 py-3">
                         <div class="flex items-center gap-2">
                             ${btnReceber}
@@ -234,7 +234,7 @@
                 document.getElementById('status').value = dados.status;
                 document.getElementById('observacoes').value = dados.observacoes;
 
-                document.getElementById('tituloForm').innerText = "Editar Reserva #" + dados.id;
+                document.getElementById('tituloForm').innerText = "Editar Reserva — " + dados.cliente_nome + " · " + dados.data_reserva.split("-").reverse().join("/");
                 document.getElementById('btnSalvar').innerText = "Atualizar Reserva";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });

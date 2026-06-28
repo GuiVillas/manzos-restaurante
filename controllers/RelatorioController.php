@@ -30,6 +30,10 @@ switch ($acao) {
         echo json_encode(Relatorio::faturamentoPorGarcom());
         break;
 
+    case 'pratos_menos_vendidos':
+        echo json_encode(Relatorio::pratosMenosVendidos());
+        break;
+
     default:
         echo json_encode(['sucesso' => false, 'mensagem' => 'Ação de relatório inválida.']);
         break;

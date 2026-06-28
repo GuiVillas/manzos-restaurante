@@ -30,6 +30,26 @@
             echo json_encode(Prato::listarCategorias());
             break;
 
+        case 'buscar':
+            $id = isset($_GET['id']) ? $_GET['id'] : (isset($_POST['id']) ? $_POST['id'] : 0);
+            echo json_encode(Prato::buscarPorId($id));
+            break;
+
+        case 'atualizar':
+            $id           = isset($_POST['id'])           ? $_POST['id']                    : 0;
+            $nome         = isset($_POST['nome'])         ? $_POST['nome']                  : '';
+            $preco        = isset($_POST['preco'])        ? $_POST['preco']                 : 0.00;
+            $categoria_id = !empty($_POST['categoria_id']) ? $_POST['categoria_id']         : null;
+            $descricao    = isset($_POST['descricao'])    ? $_POST['descricao']             : '';
+            $ativo        = isset($_POST['ativo'])        ? (int) $_POST['ativo']           : 1;
+
+            if (Prato::atualizar($id, $nome, $preco, $categoria_id, $descricao, $ativo)) {
+                echo json_encode(['sucesso' => true, 'mensagem' => 'Prato atualizado com sucesso.']);
+            } else {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar prato.']);
+            }
+            break;
+
         case 'cadastrar':
             $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
             $preco = isset($_POST['preco']) ? $_POST['preco'] : 0.00;
@@ -51,6 +71,27 @@
                 echo json_encode(['sucesso' => true]);
             } else {
                 echo json_encode(['sucesso' => false]);
+            }
+            break;
+
+        case 'aplicarDesconto':
+            $id            = isset($_POST['id'])             ? $_POST['id']             : 0;
+            $multiplicador = isset($_POST['multiplicador'])  ? $_POST['multiplicador']  : 1.00;
+
+            if (Prato::aplicarDesconto($id, $multiplicador)) {
+                echo json_encode(['sucesso' => true, 'mensagem' => 'Desconto aplicado com sucesso.']);
+            } else {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao aplicar desconto.']);
+            }
+            break;
+
+        case 'removerDesconto':
+            $id = isset($_POST['id']) ? $_POST['id'] : 0;
+
+            if (Prato::removerDesconto($id)) {
+                echo json_encode(['sucesso' => true, 'mensagem' => 'Desconto removido. Preço original restaurado.']);
+            } else {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao remover desconto.']);
             }
             break;
         

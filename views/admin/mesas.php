@@ -118,7 +118,6 @@
                     <table class="w-full">
                         <thead class="bg-neutral-900">
                             <tr>
-                                <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-5 py-3">ID</th>
                                 <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-5 py-3">Número</th>
                                 <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-5 py-3">Capacidade</th>
                                 <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-5 py-3">Status</th>
@@ -158,14 +157,13 @@
             tbody.innerHTML = '';
 
             if (dados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-sm text-zinc-500 py-8">Nenhuma mesa encontrada.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-sm text-zinc-500 py-8">Nenhuma mesa encontrada.</td></tr>';
                 return;
             }
 
             dados.forEach(mesa => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-neutral-900/50 transition-colors">
-                        <td class="px-5 py-3.5 text-sm text-zinc-500 font-mono">${mesa.id}</td>
                         <td class="px-5 py-3.5 text-sm text-zinc-300 font-medium">Mesa ${mesa.numero}</td>
                         <td class="px-5 py-3.5 text-sm text-zinc-300">${mesa.capacidade} lugares</td>
                         <td class="px-5 py-3.5">
@@ -220,7 +218,7 @@
                     document.getElementById('capacidade').value = dados.capacidade;
                     document.getElementById('status').value = dados.status;
 
-                    document.getElementById('tituloForm').innerText = "Editar Mesa #" + dados.id;
+                    document.getElementById('tituloForm').innerText = "Editar Mesa " + dados.numero;
                     document.getElementById('btnSalvar').innerText = "Atualizar Mesa";
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });

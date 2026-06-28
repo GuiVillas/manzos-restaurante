@@ -64,5 +64,26 @@ class Relatorio {
         $stmt = $db->query($sql);
         return $stmt->fetchAll();
     }
+
+    /**
+     * Retorna os pratos ativos ordenados pelos menos vendidos (do menor para o maior).
+     * Inclui pratos com zero vendas. Usado para identificar candidatos a desconto.
+     *
+     * @return array Lista de pratos com total vendido, preço original, multiplicador e preço efetivo.
+     */
+    public static function pratosMenosVendidos() {
+        $db = Database::getConnection();
+        $sql = "SELECT pr.id, pr.nome, pr.preco, pr.desconto_multiplicador,
+                       ROUND(pr.preco * pr.desconto_multiplicador, 2) AS preco_efetivo,
+                       COALESCE(SUM(pp.quantidade), 0) AS total_vendido
+                FROM prato pr
+                LEFT JOIN prato_pedido pp ON pr.id = pp.prato_id
+                LEFT JOIN pedido p ON pp.pedido_id = p.id AND p.status = 'Fechada'
+                WHERE pr.ativo = 1
+                GROUP BY pr.id, pr.nome, pr.preco, pr.desconto_multiplicador
+                ORDER BY total_vendido ASC";
+        $stmt = $db->query($sql);
+        return $stmt->fetchAll();
+    }
 }
 ?>

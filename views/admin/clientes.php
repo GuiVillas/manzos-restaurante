@@ -86,7 +86,6 @@
         <table class="w-full">
             <thead class="bg-neutral-900">
                 <tr>
-                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">ID</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">CPF</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Nome</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">E-mail</th>
@@ -106,7 +105,7 @@
         tbody.innerHTML = '';
 
         if (dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-sm text-zinc-500 px-5 py-8">Nenhum cliente encontrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-sm text-zinc-500 px-5 py-8">Nenhum cliente encontrado.</td></tr>';
             return;
         }
 
@@ -115,7 +114,6 @@
 
             tbody.innerHTML += `
                 <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
-                    <td class="text-sm text-zinc-500 px-5 py-3 font-mono">${cliente.id}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3 font-mono">${cliente.cpf || '—'}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3 font-medium">${cliente.nome}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3">${cliente.email}</td>
@@ -183,7 +181,7 @@
                 document.getElementById('email').value = dados.email;
                 document.getElementById('telefone').value = dados.telefone;
 
-                document.getElementById('tituloForm').innerText = "Editar Cliente #" + dados.id;
+                document.getElementById('tituloForm').innerText = "Editar Cliente: " + dados.nome;
                 document.getElementById('btnSalvar').innerText = "Atualizar Cliente";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });

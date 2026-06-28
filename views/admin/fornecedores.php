@@ -115,12 +115,12 @@
         <table class="w-full">
             <thead class="bg-neutral-900">
                 <tr>
-                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">ID</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Nome</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">CNPJ</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Telefone</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Categoria</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Contato</th>
+                    <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">E-mail</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Status</th>
                     <th class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold text-left px-5 py-3">Ações</th>
                 </tr>
@@ -167,7 +167,6 @@
 
             tbody.innerHTML += `
                 <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
-                    <td class="text-sm text-zinc-500 px-5 py-3 font-mono">${f.id}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3 font-medium">${f.nome}</td>
                     <td class="text-sm text-zinc-400 px-5 py-3 font-mono">${f.cnpj || '—'}</td>
                     <td class="text-sm text-zinc-300 px-5 py-3">${f.telefone}</td>
@@ -175,6 +174,7 @@
                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-sm ${corCategoria(f.categoria)}">${f.categoria}</span>
                     </td>
                     <td class="text-sm text-zinc-300 px-5 py-3">${f.contato || '—'}</td>
+                    <td class="text-sm text-zinc-300 px-5 py-3">${f.email || '—'}</td>
                     <td class="px-5 py-3">${ativoLabel}</td>
                     <td class="px-5 py-3">
                         <div class="flex items-center gap-2">
@@ -253,7 +253,7 @@
                 document.getElementById('contato').value   = f.contato || '';
                 document.getElementById('ativo').value     = f.ativo;
 
-                document.getElementById('tituloForm').innerText = 'Editar Fornecedor #' + f.id;
+                document.getElementById('tituloForm').innerText = 'Editar Fornecedor: ' + f.nome;
                 document.getElementById('btnSalvar').innerText  = 'Atualizar Fornecedor';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
