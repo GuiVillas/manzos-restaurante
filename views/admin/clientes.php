@@ -66,17 +66,11 @@
 <!-- Search Card -->
 <div class="bg-neutral-900/50 border border-neutral-800 rounded-sm p-6 mb-6">
     <h2 class="text-sm font-semibold tracking-wider uppercase text-zinc-300 mb-4">Pesquisar Cliente</h2>
-    <div class="flex flex-col sm:flex-row gap-3">
-        <input type="text" id="campoPesquisa" placeholder="CPF, nome, email ou telefone..." oninput="pesquisarClientes()"
-               class="flex-1 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
-        <button type="button" onclick="pesquisarClientes()"
-                class="bg-gold-400 hover:bg-gold-300 text-black text-xs font-semibold tracking-wider uppercase px-5 py-2.5 rounded-sm transition-all duration-300">
-            Buscar
-        </button>
-        <button type="button" onclick="carregarClientes()"
-                class="bg-neutral-800 hover:bg-neutral-700 text-zinc-300 text-xs font-semibold tracking-wider uppercase px-5 py-2.5 rounded-sm transition-all duration-300">
-            Ver Todos
-        </button>
+    <div class="relative">
+        <input type="text" id="campoPesquisa" placeholder="CPF, nome, e-mail ou telefone..." oninput="pesquisarClientes()"
+               class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 pr-10 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
+        <button type="button" onclick="document.getElementById('campoPesquisa').value=''; pesquisarClientes();"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-300 transition-colors text-lg leading-none">✕</button>
     </div>
 </div>
 

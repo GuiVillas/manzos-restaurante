@@ -73,6 +73,7 @@
             <thead class="bg-neutral-900">
                 <tr>
                     <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-6 py-3">Nome</th>
+                    <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-6 py-3">Descrição</th>
                     <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-6 py-3">Categoria</th>
                     <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-6 py-3">Preço</th>
                     <th class="text-left text-[11px] uppercase tracking-wider text-zinc-500 font-semibold px-6 py-3">Status</th>
@@ -103,7 +104,8 @@
         const filtrados = t
             ? _todosPratos.filter(p =>
                 p.nome.toLowerCase().includes(t) ||
-                (p.categoria || '').toLowerCase().includes(t))
+                (p.categoria || '').toLowerCase().includes(t) ||
+                (p.descricao || '').toLowerCase().includes(t))
             : _todosPratos;
         renderizarPratos(filtrados);
     }
@@ -112,7 +114,7 @@
         const tbody = document.getElementById('tabelaPratos');
         tbody.innerHTML = '';
         if (dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-500">Nenhum prato cadastrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-sm text-zinc-500">Nenhum prato cadastrado.</td></tr>';
             return;
         }
 
@@ -130,6 +132,7 @@
             tbody.innerHTML += `
                 <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
                     <td class="px-6 py-3 text-sm text-zinc-300 font-medium">${prato.nome}</td>
+                    <td class="px-6 py-3 text-sm text-zinc-500 max-w-xs">${prato.descricao ? prato.descricao.substring(0,45) + (prato.descricao.length > 45 ? '…' : '') : '<span class="text-zinc-700">—</span>'}</td>
                     <td class="px-6 py-3 text-sm text-zinc-400">${prato.categoria || '<span class="text-zinc-600 italic">Sem categoria</span>'}</td>
                     <td class="px-6 py-3 text-sm">${precoExibido}</td>
                     <td class="px-6 py-3">${prato.ativo == 1 ? '<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Ativo</span>' : '<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-500"><span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>Inativo</span>'}</td>

@@ -87,27 +87,12 @@
             <!-- Search Bar -->
             <div class="bg-neutral-900/50 border border-neutral-800 rounded-sm p-4 mb-6">
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <input
-                        type="text"
-                        id="campoPesquisa"
-                        placeholder="Pesquisar por número ou status..." oninput="pesquisarMesas()"
-                        class="flex-1 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20 placeholder-zinc-600"
-                    >
-                    <div class="flex gap-3">
-                        <button
-                            type="button"
-                            onclick="pesquisarMesas()"
-                            class="bg-gold-400 hover:bg-gold-300 text-black text-xs font-semibold tracking-wider uppercase px-5 py-2.5 rounded-sm transition-all duration-300"
-                        >
-                            Buscar
-                        </button>
-                        <button
-                            type="button"
-                            onclick="carregarMesas()"
-                            class="bg-neutral-800 hover:bg-neutral-700 text-zinc-300 text-xs font-semibold tracking-wider uppercase px-5 py-2.5 rounded-sm transition-all duration-300"
-                        >
-                            Ver Todos
-                        </button>
+                    <div class="relative flex-1">
+                        <input type="text" id="campoPesquisa"
+                            placeholder="Filtrar por número ou status..." oninput="pesquisarMesas()"
+                            class="w-full bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 pr-10 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20 placeholder-zinc-600">
+                        <button type="button" onclick="document.getElementById('campoPesquisa').value=''; pesquisarMesas();"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-300 transition-colors text-lg leading-none">✕</button>
                     </div>
                 </div>
             </div>

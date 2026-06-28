@@ -16,10 +16,12 @@
          */
         public static function listar() {
             $db = Database::getConnection();
-            $sql = "SELECT p.*, pd.mesa_id, m.numero AS mesa_numero
+            $sql = "SELECT p.*, pd.mesa_id, m.numero AS mesa_numero,
+                           cl.nome AS cliente_nome
                     FROM pagamento p
                     LEFT JOIN pedido pd ON p.pedido_id = pd.id
-                    LEFT JOIN mesa m ON pd.mesa_id = m.id
+                    LEFT JOIN mesa m    ON pd.mesa_id  = m.id
+                    LEFT JOIN cliente cl ON pd.cliente_id = cl.id
                     ORDER BY p.criado_em DESC";
             $stmt = $db->query($sql);
             return $stmt->fetchAll();
@@ -33,10 +35,12 @@
          */
         public static function filtrarPorStatus($status) {
             $db = Database::getConnection();
-            $sql = "SELECT p.*, pd.mesa_id, m.numero AS mesa_numero
+            $sql = "SELECT p.*, pd.mesa_id, m.numero AS mesa_numero,
+                           cl.nome AS cliente_nome
                     FROM pagamento p
                     LEFT JOIN pedido pd ON p.pedido_id = pd.id
-                    LEFT JOIN mesa m ON pd.mesa_id = m.id
+                    LEFT JOIN mesa m    ON pd.mesa_id  = m.id
+                    LEFT JOIN cliente cl ON pd.cliente_id = cl.id
                     WHERE p.status = ?
                     ORDER BY p.criado_em DESC";
             $stmt = $db->prepare($sql);
@@ -52,10 +56,12 @@
          */
         public static function buscarPorId($id) {
             $db = Database::getConnection();
-            $sql = "SELECT p.*, pd.mesa_id, m.numero AS mesa_numero
+            $sql = "SELECT p.*, pd.mesa_id, m.numero AS mesa_numero,
+                           cl.nome AS cliente_nome
                     FROM pagamento p
                     LEFT JOIN pedido pd ON p.pedido_id = pd.id
-                    LEFT JOIN mesa m ON pd.mesa_id = m.id
+                    LEFT JOIN mesa m    ON pd.mesa_id  = m.id
+                    LEFT JOIN cliente cl ON pd.cliente_id = cl.id
                     WHERE p.id = ?";
             $stmt = $db->prepare($sql);
             $stmt->execute([$id]);
