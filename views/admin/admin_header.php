@@ -98,7 +98,7 @@ $pagina_admin = basename($_SERVER['PHP_SELF']);
     <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-neutral-950 border-r border-neutral-900 z-40 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
         <!-- Logo -->
         <div class="h-20 flex items-center px-6 border-b border-neutral-900">
-            <a href="../../index.php" class="font-serif tracking-[0.25em] text-lg font-bold text-amber-100 hover:text-white transition-colors">MANZO'S</a>
+            <a href="../../index.php" target="_blank" rel="noopener" class="font-serif tracking-[0.25em] text-lg font-bold text-amber-100 hover:text-white transition-colors">MANZO'S</a>
             <span class="ml-auto text-[9px] tracking-wider uppercase text-gold-500 font-semibold bg-gold-500/10 px-2 py-1 rounded">Admin</span>
         </div>
 

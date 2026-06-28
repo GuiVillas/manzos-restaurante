@@ -90,7 +90,7 @@
                     <input
                         type="text"
                         id="campoPesquisa"
-                        placeholder="Pesquisar por número ou status..."
+                        placeholder="Pesquisar por número ou status..." oninput="pesquisarMesas()"
                         class="flex-1 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20 placeholder-zinc-600"
                     >
                     <div class="flex gap-3">

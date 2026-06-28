@@ -100,12 +100,16 @@
 <!-- Filter Card -->
 <div class="bg-neutral-900/50 border border-neutral-800 rounded-sm p-6 mb-6">
     <h2 class="text-sm font-semibold tracking-wider uppercase text-zinc-300 mb-4">Filtrar Pagamentos</h2>
-    <div class="flex flex-wrap gap-3">
-        <button onclick="filtrar('')"      id="filtroTodos"     class="filtro-btn ativo text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-sm transition-all duration-300">Todos</button>
-        <button onclick="filtrar('Pago')"  id="filtroPago"      class="filtro-btn text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-sm transition-all duration-300">Pagos</button>
-        <button onclick="filtrar('Pendente')" id="filtroPendente" class="filtro-btn text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-sm transition-all duration-300">Pendentes</button>
+    <div class="flex flex-wrap gap-3 mb-4">
+        <button onclick="filtrar('')"         id="filtroTodos"     class="filtro-btn ativo text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-sm transition-all duration-300">Todos</button>
+        <button onclick="filtrar('Pago')"     id="filtroPago"      class="filtro-btn text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-sm transition-all duration-300">Pagos</button>
+        <button onclick="filtrar('Pendente')" id="filtroPendente"  class="filtro-btn text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-sm transition-all duration-300">Pendentes</button>
         <button onclick="filtrar('Cancelado')" id="filtroCancelado" class="filtro-btn text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-sm transition-all duration-300">Cancelados</button>
     </div>
+    <input type="text" id="campoPesquisaPag"
+           placeholder="Filtrar por mesa ou forma de pagamento..."
+           oninput="filtrarTexto(this.value)"
+           class="w-full sm:w-80 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
 </div>
 
 <style>
@@ -153,6 +157,9 @@
     function formatarMoeda(valor) {
         return 'R$ ' + parseFloat(valor).toFixed(2).replace('.', ',');
     }
+
+    let _todosPagamentos = [];
+    let _filtroStatusAtual = '';
 
     function renderizarTabela(dados) {
         const tbody = document.getElementById('tabelaPagamentos');
@@ -210,6 +217,8 @@
     }
 
     function filtrar(status) {
+        _filtroStatusAtual = status;
+        document.getElementById('campoPesquisaPag').value = '';
         document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
         const mapa = { '': 'filtroTodos', 'Pago': 'filtroPago', 'Pendente': 'filtroPendente', 'Cancelado': 'filtroCancelado' };
         if (mapa[status]) document.getElementById(mapa[status]).classList.add('ativo');
@@ -217,7 +226,20 @@
         const url = status
             ? '../../controllers/PagamentoController.php?acao=filtrar&status=' + encodeURIComponent(status)
             : '../../controllers/PagamentoController.php?acao=listar';
-        fetch(url).then(r => r.json()).then(dados => renderizarTabela(dados));
+        fetch(url).then(r => r.json()).then(dados => {
+            _todosPagamentos = dados;
+            renderizarTabela(dados);
+        });
+    }
+
+    function filtrarTexto(termo) {
+        const t = termo.toLowerCase();
+        const filtrados = t ? _todosPagamentos.filter(p =>
+            (p.mesa_numero ? String(p.mesa_numero).includes(t) : false) ||
+            (p.forma_pagamento || '').toLowerCase().includes(t) ||
+            (p.observacoes || '').toLowerCase().includes(t)
+        ) : _todosPagamentos;
+        renderizarTabela(filtrados);
     }
 
     document.getElementById('formPagamento').addEventListener('submit', function(e) {

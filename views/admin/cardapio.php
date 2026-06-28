@@ -61,8 +61,12 @@
 
 <!-- Tabela de Pratos -->
 <div class="bg-neutral-900/50 border border-neutral-800 rounded-sm overflow-hidden">
-    <div class="px-6 py-4 border-b border-neutral-800">
+    <div class="px-6 py-4 border-b border-neutral-800 flex flex-col sm:flex-row sm:items-center gap-3">
         <h2 class="text-sm font-semibold tracking-wider uppercase text-zinc-300">Pratos Cadastrados</h2>
+        <input type="text" id="campoPesquisaPrato"
+               placeholder="Filtrar por nome ou categoria..."
+               oninput="filtrarPratos(this.value)"
+               class="sm:ml-auto w-full sm:w-64 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
     </div>
     <div class="overflow-x-auto">
         <table class="w-full">
@@ -83,52 +87,68 @@
 </div>
 
 <script>
+    let _todosPratos = [];
+
     function carregarPratos() {
         fetch('../../controllers/PratoController.php?acao=listar')
             .then(response => response.json())
             .then(dados => {
-                const tbody = document.getElementById('tabelaPratos');
-                tbody.innerHTML = '';
-
-                if (dados.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-500">Nenhum prato cadastrado.</td></tr>';
-                    return;
-                }
-
-                dados.forEach(prato => {
-                    const precoFormatado  = parseFloat(prato.preco).toFixed(2).replace('.',',');
-                    const mult            = parseFloat(prato.desconto_multiplicador || 1);
-                    const temDesconto     = mult < 1.00;
-                    const pctDesc         = temDesconto ? Math.round((1 - mult) * 100) : 0;
-                    const precoEfetivo    = (parseFloat(prato.preco) * mult).toFixed(2).replace('.',',');
-                    const precoExibido    = temDesconto
-                        ? `<span class="line-through text-zinc-600 text-xs mr-1">R$ ${precoFormatado}</span>
-                           <span class="text-emerald-400 font-semibold">R$ ${precoEfetivo}</span>
-                           <span class="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-sm bg-amber-500/10 text-amber-400 border border-amber-500/20">${pctDesc}% OFF</span>`
-                        : `<span class="text-gold-400 font-medium">R$ ${precoFormatado}</span>`;
-                    tbody.innerHTML += `
-                        <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
-                            <td class="px-6 py-3 text-sm text-zinc-300 font-medium">${prato.nome}</td>
-                            <td class="px-6 py-3 text-sm text-zinc-400">${prato.categoria || '<span class="text-zinc-600 italic">Sem categoria</span>'}</td>
-                            <td class="px-6 py-3 text-sm">${precoExibido}</td>
-                            <td class="px-6 py-3">${prato.ativo == 1 ? '<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Ativo</span>' : '<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-500"><span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>Inativo</span>'}</td>
-                            <td class="px-6 py-3">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="editarPrato(${prato.id})"
-                                            class="text-[11px] uppercase tracking-wider font-semibold text-gold-400 hover:text-gold-300 transition-colors">
-                                        Editar
-                                    </button>
-                                    <span class="text-neutral-700">|</span>
-                                    <button onclick="deletarPrato(${prato.id})"
-                                            class="text-[11px] uppercase tracking-wider font-semibold text-red-400 hover:text-red-300 transition-colors">
-                                        Excluir
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
+                _todosPratos = dados;
+                renderizarPratos(dados);
             });
+    }
+
+    function filtrarPratos(termo) {
+        const t = termo.toLowerCase().trim();
+        const filtrados = t
+            ? _todosPratos.filter(p =>
+                p.nome.toLowerCase().includes(t) ||
+                (p.categoria || '').toLowerCase().includes(t))
+            : _todosPratos;
+        renderizarPratos(filtrados);
+    }
+
+    function renderizarPratos(dados) {
+        const tbody = document.getElementById('tabelaPratos');
+        tbody.innerHTML = '';
+        if (dados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-500">Nenhum prato cadastrado.</td></tr>';
+            return;
+        }
+
+        dados.forEach(prato => {
+            const precoFormatado  = parseFloat(prato.preco).toFixed(2).replace('.',',');
+            const mult            = parseFloat(prato.desconto_multiplicador || 1);
+            const temDesconto     = mult < 1.00;
+            const pctDesc         = temDesconto ? Math.round((1 - mult) * 100) : 0;
+            const precoEfetivo    = (parseFloat(prato.preco) * mult).toFixed(2).replace('.',',');
+            const precoExibido    = temDesconto
+                ? `<span class="line-through text-zinc-600 text-xs mr-1">R$ ${precoFormatado}</span>
+                    <span class="text-emerald-400 font-semibold">R$ ${precoEfetivo}</span>
+                    <span class="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-sm bg-amber-500/10 text-amber-400 border border-amber-500/20">${pctDesc}% OFF</span>`
+                : `<span class="text-gold-400 font-medium">R$ ${precoFormatado}</span>`;
+            tbody.innerHTML += `
+                <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
+                    <td class="px-6 py-3 text-sm text-zinc-300 font-medium">${prato.nome}</td>
+                    <td class="px-6 py-3 text-sm text-zinc-400">${prato.categoria || '<span class="text-zinc-600 italic">Sem categoria</span>'}</td>
+                    <td class="px-6 py-3 text-sm">${precoExibido}</td>
+                    <td class="px-6 py-3">${prato.ativo == 1 ? '<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Ativo</span>' : '<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-500"><span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>Inativo</span>'}</td>
+                    <td class="px-6 py-3">
+                        <div class="flex items-center gap-2">
+                            <button onclick="editarPrato(${prato.id})"
+                                    class="text-[11px] uppercase tracking-wider font-semibold text-gold-400 hover:text-gold-300 transition-colors">
+                                Editar
+                            </button>
+                            <span class="text-neutral-700">|</span>
+                            <button onclick="deletarPrato(${prato.id})"
+                                    class="text-[11px] uppercase tracking-wider font-semibold text-red-400 hover:text-red-300 transition-colors">
+                                Excluir
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
     }
 
     document.getElementById('formPrato').addEventListener('submit', function(e) {

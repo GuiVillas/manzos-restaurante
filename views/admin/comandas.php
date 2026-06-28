@@ -44,9 +44,12 @@
 
     <!-- Left: Comandas Ativas -->
     <div class="bg-neutral-900/50 border border-neutral-800 rounded-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-neutral-800 flex items-center gap-2">
+        <div class="px-6 py-4 border-b border-neutral-800 flex flex-col sm:flex-row sm:items-center gap-3">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <h2 class="text-sm font-semibold tracking-wider uppercase text-zinc-300">Comandas Ativas</h2>
+            <input type="text" id="filtroAtivas" placeholder="Filtrar por mesa ou cliente..."
+                   oninput="filtrarAtivas(this.value)"
+                   class="sm:ml-auto w-full sm:w-56 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
         </div>
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -123,9 +126,12 @@
 
 <!-- Histórico de Vendas -->
 <div class="bg-neutral-900/50 border border-neutral-800 rounded-sm overflow-hidden">
-    <div class="px-6 py-4 border-b border-neutral-800">
+    <div class="px-6 py-4 border-b border-neutral-800 flex flex-col sm:flex-row sm:items-center gap-3">
         <h2 class="text-sm font-semibold tracking-wider uppercase text-zinc-300">Histórico de Vendas</h2>
-        <p class="text-xs text-zinc-600 mt-1">Comandas encerradas e finalizadas</p>
+        <input type="text" id="filtroHistorico" placeholder="Filtrar por mesa ou cliente..."
+               oninput="filtrarHistorico(this.value)"
+               class="sm:ml-auto w-full sm:w-56 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
+        <p class="text-xs text-zinc-600">Comandas encerradas e finalizadas</p>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full">
@@ -144,34 +150,15 @@
 </div>
 
 <script>
+    let _todasAtivas = [];
+    let _todoHistorico = [];
+
     function carregarAtivas() {
         fetch('../../controllers/PedidoController.php?acao=listar_ativas')
             .then(r => r.json())
             .then(dados => {
-                const tbody = document.getElementById('tabelaComandasAtivas');
-                tbody.innerHTML = '';
-
-                if (dados.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-500">Nenhuma comanda ativa no momento.</td></tr>';
-                    return;
-                }
-
-                dados.forEach(c => {
-                    tbody.innerHTML += `
-                        <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
-                            <td class="px-6 py-3 text-sm text-zinc-300 font-mono">#${c.id}</td>
-                            <td class="px-6 py-3 text-sm text-zinc-300">Mesa ${c.mesa_numero}</td>
-                            <td class="px-6 py-3 text-sm text-zinc-400">${c.cliente_nome || '<span class="text-zinc-600 italic">Walk-in</span>'}</td>
-                            <td class="px-6 py-3 text-sm text-zinc-400">${c.garcom_nome}</td>
-                            <td class="px-6 py-3">
-                                <button onclick="verDetalhes(${c.id}, ${c.mesa_numero}, true)"
-                                        class="bg-neutral-800 hover:bg-neutral-700 text-zinc-300 text-xs font-semibold tracking-wider uppercase px-3 py-1.5 rounded-sm transition-all duration-300">
-                                    Ver Conta
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
+                _todasAtivas = dados;
+                renderizarAtivas(dados);
             });
     }
 
@@ -179,31 +166,81 @@
         fetch('../../controllers/PedidoController.php?acao=listar_historico')
             .then(r => r.json())
             .then(dados => {
-                const tbody = document.getElementById('tabelaHistorico');
-                tbody.innerHTML = '';
-
-                if (dados.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-500">Nenhum registro no histórico.</td></tr>';
-                    return;
-                }
-
-                dados.forEach(c => {
-                    tbody.innerHTML += `
-                        <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
-                            <td class="px-6 py-3 text-sm text-zinc-300 font-mono">#${c.id}</td>
-                            <td class="px-6 py-3 text-sm text-zinc-300">Mesa ${c.mesa_numero}</td>
-                            <td class="px-6 py-3 text-sm text-zinc-400">${c.cliente_nome || '<span class="text-zinc-600 italic">Walk-in</span>'}</td>
-                            <td class="px-6 py-3 text-sm text-zinc-400">${c.garcom_nome}</td>
-                            <td class="px-6 py-3">
-                                <button onclick="verDetalhes(${c.id}, ${c.mesa_numero}, false)"
-                                        class="bg-neutral-800 hover:bg-neutral-700 text-zinc-300 text-xs font-semibold tracking-wider uppercase px-3 py-1.5 rounded-sm transition-all duration-300">
-                                    Extrato
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
+                _todoHistorico = dados;
+                renderizarHistorico(dados);
             });
+    }
+
+    function filtrarAtivas(termo) {
+        const t = termo.toLowerCase();
+        renderizarAtivas(t ? _todasAtivas.filter(c =>
+            String(c.mesa_numero).includes(t) ||
+            (c.cliente_nome || '').toLowerCase().includes(t) ||
+            (c.garcom_nome || '').toLowerCase().includes(t)
+        ) : _todasAtivas);
+    }
+
+    function filtrarHistorico(termo) {
+        const t = termo.toLowerCase();
+        renderizarHistorico(t ? _todoHistorico.filter(c =>
+            String(c.mesa_numero).includes(t) ||
+            (c.cliente_nome || '').toLowerCase().includes(t) ||
+            (c.garcom_nome || '').toLowerCase().includes(t)
+        ) : _todoHistorico);
+    }
+
+    function renderizarAtivas(dados) {
+        const tbody = document.getElementById('tabelaComandasAtivas');
+        tbody.innerHTML = '';
+
+        if (dados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-500">Nenhuma comanda ativa no momento.</td></tr>';
+            return;
+        }
+
+        dados.forEach(c => {
+            tbody.innerHTML += `
+                <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
+                    <td class="px-6 py-3 text-sm text-zinc-300 font-mono">#${c.id}</td>
+                    <td class="px-6 py-3 text-sm text-zinc-300">Mesa ${c.mesa_numero}</td>
+                    <td class="px-6 py-3 text-sm text-zinc-400">${c.cliente_nome || '<span class="text-zinc-600 italic">Walk-in</span>'}</td>
+                    <td class="px-6 py-3 text-sm text-zinc-400">${c.garcom_nome}</td>
+                    <td class="px-6 py-3">
+                        <button onclick="verDetalhes(${c.id}, ${c.mesa_numero}, true)"
+                                class="bg-neutral-800 hover:bg-neutral-700 text-zinc-300 text-xs font-semibold tracking-wider uppercase px-3 py-1.5 rounded-sm transition-all duration-300">
+                            Ver Conta
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function renderizarHistorico(dados) {
+        const tbody = document.getElementById('tabelaHistorico');
+        tbody.innerHTML = '';
+
+        if (dados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-500">Nenhum registro no histórico.</td></tr>';
+            return;
+        }
+
+        dados.forEach(c => {
+            tbody.innerHTML += `
+                <tr class="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors">
+                    <td class="px-6 py-3 text-sm text-zinc-300 font-mono">#${c.id}</td>
+                    <td class="px-6 py-3 text-sm text-zinc-300">Mesa ${c.mesa_numero}</td>
+                    <td class="px-6 py-3 text-sm text-zinc-400">${c.cliente_nome || '<span class="text-zinc-600 italic">Walk-in</span>'}</td>
+                    <td class="px-6 py-3 text-sm text-zinc-400">${c.garcom_nome}</td>
+                    <td class="px-6 py-3">
+                        <button onclick="verDetalhes(${c.id}, ${c.mesa_numero}, false)"
+                                class="bg-neutral-800 hover:bg-neutral-700 text-zinc-300 text-xs font-semibold tracking-wider uppercase px-3 py-1.5 rounded-sm transition-all duration-300">
+                            Extrato
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
     }
 
     function verDetalhes(pedidoId, numMesa, isAtiva) {

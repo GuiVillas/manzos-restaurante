@@ -92,7 +92,7 @@
 <div class="bg-neutral-900/50 border border-neutral-800 rounded-sm p-6 mb-6">
     <h2 class="text-sm font-semibold tracking-wider uppercase text-zinc-300 mb-4">Pesquisar Usuário</h2>
     <div class="flex flex-col sm:flex-row gap-3">
-        <input type="text" id="campoPesquisa" placeholder="Nome, e-mail ou cargo..."
+        <input type="text" id="campoPesquisa" placeholder="Nome, e-mail ou cargo..." oninput="pesquisarUsuarios()"
                class="flex-1 bg-neutral-900 border border-neutral-800 focus:border-gold-400 text-white text-sm px-4 py-2.5 rounded-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-gold-400/20">
         <button type="button" onclick="pesquisarUsuarios()"
                 class="bg-gold-400 hover:bg-gold-300 text-black text-xs font-semibold tracking-wider uppercase px-5 py-2.5 rounded-sm transition-all duration-300">

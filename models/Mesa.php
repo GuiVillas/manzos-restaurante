@@ -35,7 +35,7 @@
         public static function pesquisar($termo) {
             $db = Database::getConnection();
             $sql = "SELECT * FROM mesa
-                    WHERE numero = ? OR status = ?
+                    WHERE CAST(numero AS CHAR) LIKE ? OR status LIKE ?
                     ORDER BY numero ASC";
             $stmt = $db->prepare($sql);
             $termoLike = "%" . $termo . "%";
