@@ -162,13 +162,13 @@ INSERT INTO mesa (numero, capacidade, status) VALUES
 -- =============================================================================
 
 INSERT INTO usuario (nome, email, senha, cargo) VALUES
-('Ricardo Manzo',         'ricardo@manzos.com.br',     '123456', 'Gerente'),
-('Chef Elcio Brandao',    'chef@manzos.com.br',         '123456', 'Chef Executivo'),
-('Sous-Chef Priya Nair',  'souschef@manzos.com.br',     '123456', 'Sous-Chef'),
-('Lucas Ferreira',        'lucas.f@manzos.com.br',      '123456', 'Garcom'),
-('Sabrina Torres',        'sabrina.t@manzos.com.br',    '123456', 'Garcom'),
-('Diego Campos',          'diego.c@manzos.com.br',      '123456', 'Garcom'),
-('Leticia Prado',         'leticia.p@manzos.com.br',    '123456', 'Caixa');
+('Ricardo Manzo',         'ricardo@manzos.com',     '123456', 'Gerente'),
+('Chef Elcio Brandao',    'chef@manzos.com',         '123456', 'Chef Executivo'),
+('Sous-Chef Priya Nair',  'souschef@manzos.com',     '123456', 'Sous-Chef'),
+('Lucas Ferreira',        'lucas.f@manzos.com',      '123456', 'Garcom'),
+('Sabrina Torres',        'sabrina.t@manzos.com',    '123456', 'Garcom'),
+('Diego Campos',          'diego.c@manzos.com',      '123456', 'Garcom'),
+('Leticia Prado',         'leticia.p@manzos.com',    '123456', 'Caixa');
 
 -- =============================================================================
 --  CATEGORIAS
